@@ -4,11 +4,11 @@
 	import { Generations } from '@pkmn/data';
 	import { Dex } from '@pkmn/dex';
 	import Svelecte from 'svelecte';
-	import { generation } from '../stores';
+	import { generation } from '../lib/stores/stores';
 
 	export let data;
 
-	console.log(data.json.pokemon_entries.map((i: any) => i.pokemon_species.name));
+	console.log(data);
 	let bestEvs: any;
 
 	// const attacker = {
@@ -68,7 +68,8 @@
 		return allMoves;
 	}
 
-	$: names = getNames(gen).sort((a, b) => a.localeCompare(b));
+	//$: names = getNames(gen).sort((a, b) => a.localeCompare(b));
+	$: names = data.correct.map((i) => i!.name);
 	$: items = getItems(gen).sort((a, b) => a.localeCompare(b));
 	$: moves = getMoves(gen).sort((a, b) => a.localeCompare(b));
 	$: natures = Object.entries(gens.dex.data.Natures).map((i) => i[1].name);
