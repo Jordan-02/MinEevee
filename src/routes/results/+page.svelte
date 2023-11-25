@@ -1,1 +1,6 @@
-<div>This is results page</div>
+<script>
+	import { bestEv } from '$lib/stores/stores';
+	console.log(bestEv);
+</script>
+
+<div>{bestEv}</div>

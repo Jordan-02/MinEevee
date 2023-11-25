@@ -1,16 +1,29 @@
 <script lang="ts">
 	import { getBestEVs } from '$lib/calculate';
-	import type { AttackerProps, DefenderProps } from '$lib/types';
+	import PokemonCard from '$lib/components/PokemonCard.svelte';
 	import { Generations } from '@pkmn/data';
 	import { Dex } from '@pkmn/dex';
-	import Svelecte from 'svelecte';
-	import { generation } from '../lib/stores/stores';
+	import type { GenerationNum } from '@smogon/calc';
+	import { attacker, bestEv, defender, generation } from '../lib/stores/stores';
 
 	export let data;
 
-	console.log(data);
+	const { mons } = data;
+	const countries = data.data.countries;
 	let bestEvs: any;
+	console.log(mons);
 
+	const generations: { name: string; id: GenerationNum }[] = [
+		{ name: 'Kanto', id: 1 },
+		{ name: 'Johto', id: 2 },
+		{ name: 'Hoenn', id: 3 },
+		{ name: 'Sinnoh', id: 4 },
+		{ name: 'Unova', id: 5 },
+		{ name: 'Kalos', id: 6 },
+		{ name: 'Alola', id: 7 },
+		{ name: 'Galar', id: 8 },
+		{ name: 'Paldea', id: 9 }
+	];
 	// const attacker = {
 	// 	name: 'Flutter Mane',
 	// 	item: 'Choice Specs',
@@ -30,8 +43,6 @@
 	// 	level: 50
 	// };
 
-	let attacker: AttackerProps = { level: 50 };
-	let defender: DefenderProps = { level: 50 };
 	let evs: Partial<{
 		hp: number;
 		atk: number;
@@ -41,18 +52,8 @@
 		spe: number;
 	}> = {};
 
-	//const result = getBestEVs({ attacker, defender, generation: 9, threshold: 1 });
-	let gen = $generation;
-
 	const gens = new Generations(Dex);
 
-	function getNames(genNum: number) {
-		let allNames: string[] = [];
-		for (const i of gens.get(genNum).species) {
-			allNames.push(i.name);
-		}
-		return allNames;
-	}
 	function getItems(genNum: number) {
 		let allItems: string[] = [];
 		for (const i of gens.get(genNum).items) {
@@ -68,10 +69,9 @@
 		return allMoves;
 	}
 
-	//$: names = getNames(gen).sort((a, b) => a.localeCompare(b));
-	$: names = data.correct.map((i) => i!.name);
-	$: items = getItems(gen).sort((a, b) => a.localeCompare(b));
-	$: moves = getMoves(gen).sort((a, b) => a.localeCompare(b));
+	$: names = mons.map((i) => i!.name);
+	$: items = getItems($generation).sort((a, b) => a.localeCompare(b));
+	$: moves = getMoves($generation).sort((a, b) => a.localeCompare(b));
 	$: natures = Object.entries(gens.dex.data.Natures).map((i) => i[1].name);
 
 	$: nameMap = names.map((name) => ({ name, id: name }));
@@ -79,112 +79,55 @@
 	$: movesMap = moves.map((name) => ({ name, id: name }));
 	$: naturesMap = natures.map((name) => ({ name, id: name }));
 
-	let attackerImage: Response | undefined;
-	let defenderImage: Response | undefined;
-
 	function handleClick() {
-		attacker.evs = evs;
-		console.log(attacker, defender);
-		bestEvs = getBestEVs({ attacker, defender, generation: 9, threshold: 1 });
+		bestEvs = getBestEVs({
+			attacker: $attacker,
+			defender: $defender,
+			generation: $generation,
+			threshold: 1
+		});
+		$bestEv = bestEvs;
 	}
 
-	async function getAttackerSprite() {
-		if (attacker.name) {
-			const pokemon = await fetch(
-				`https://pokeapi.co/api/v2/pokemon/${attacker.name.toLocaleLowerCase()}`
-			);
-			const json = await pokemon.json();
-			attackerImage = await fetch(
-				`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${json.id}.png`
-			);
+	$: buttonStyle = (id: number): string => {
+		if (id == $generation) {
+			return 'border border-white px-3 py-2 rounded-xl bg-white text-black transition duration-200 ease-in';
+		} else {
+			return 'border border-white px-3 py-2 rounded-xl hover:bg-white hover:text-black transition duration-200 ease-in hover:-translate-y-2';
 		}
-	}
-	async function getDefenderSprite() {
-		if (defender.name) {
-			const pokemon = await fetch(
-				`https://pokeapi.co/api/v2/pokemon/${defender.name.toLocaleLowerCase()}`
-			);
-			const json = await pokemon.json();
-			defenderImage = await fetch(
-				`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${json.id}.png`
-			);
-		}
-	}
+	};
 </script>
 
 <div>
-	<!-- <input
-		type="range"
-		bind:value={gen}
-		min="1"
-		max="9"
-		class="text-black"
-		on:change={() => {
-			attacker.name = undefined;
-			attacker.item = undefined;
-			defender.name = undefined;
-			defender.item = undefined;
-		}}
-	/> -->
+	<div class="flex justify-evenly mx-20 my-12">
+		{#each generations as region (region.id)}
+			<button class={buttonStyle(region.id)} on:click={() => ($generation = region.id)}
+				>Gen {region.id}</button
+			>
+		{/each}
+	</div>
 	<div class="flex h-full justify-center">
-		<div class="card p-4 border border-white flex w-1/3 flex-col items-center gap-3">
-			{#if attackerImage}
-				<img src={attackerImage.url} alt="Attacker" class="w-52 h-52" />
-			{:else}
-				<span class="font-bold text-2xl w-52 h-52">No sprite available</span>
-			{/if}
-			<div class="text-black w-1/2">
-				<Svelecte
-					options={nameMap}
-					bind:value={attacker.name}
-					placeholder="Enter Pokemon..."
-					on:change={getAttackerSprite}
-				/>
-			</div>
-			<div class="text-black w-1/2">
-				<Svelecte options={itemsMap} bind:value={attacker.item} placeholder="Enter Item..." />
-			</div>
+		<PokemonCard
+			names={nameMap}
+			monType="Attacker"
+			pokemon={attacker}
+			items={itemsMap}
+			moves={movesMap}
+			natures={naturesMap}
+		/>
 
-			<div class="text-black w-1/2">
-				<Svelecte options={movesMap} bind:value={attacker.move} placeholder="Enter Move..." />
-			</div>
-			<div class="text-black w-1/2">
-				<Svelecte options={naturesMap} bind:value={attacker.nature} placeholder="Enter Nature..." />
-			</div>
-			<input type="number" bind:value={attacker.level} class="text-black" />
-			<input type="number" bind:value={evs.atk} class="text-black" />
-			<input type="number" bind:value={evs.spa} class="text-black" />
-		</div>
-
-		<div class="card p-4 border border-white w-1/3 flex flex-col items-center">
-			{#if defenderImage}
-				<img src={defenderImage.url} alt="Defender" class="w-52 h-52" />
-			{:else}
-				<span class="font-bold text-2xl w-52 h-52">No sprite available</span>
-			{/if}
-			<div class="text-black w-1/2">
-				<Svelecte
-					options={nameMap}
-					bind:value={defender.name}
-					placeholder="Enter Pokemon..."
-					on:change={getDefenderSprite}
-				/>
-			</div>
-			<div class="text-black w-1/2">
-				<Svelecte options={itemsMap} bind:value={defender.item} placeholder="Enter Item..." />
-			</div>
-			<div class="text-black w-1/2">
-				<Svelecte options={naturesMap} bind:value={defender.nature} placeholder="Enter Nature..." />
-			</div>
-			<div class="flex gap-2">
-				<label for="DefLevel">Level</label>
-				<input id="DefLevel" type="number" bind:value={defender.level} class="text-black" />
-			</div>
-		</div>
+		<PokemonCard
+			names={nameMap}
+			monType="Defender"
+			pokemon={defender}
+			items={itemsMap}
+			natures={naturesMap}
+		/>
 	</div>
 
 	<button on:click={handleClick}>Click me</button>
 	{#if bestEvs}
+		<a href="/results"> Click to go to results</a>
 		<p>Least Amount of Evs to survive: HP:{bestEvs.minEvs[0]} DEF: {bestEvs.minEvs[1]}</p>
 		<p>
 			Least Amount of Evs to survive with maximum HP: HP:{bestEvs.maxHp[0]} DEF: {bestEvs.maxHp[1]}
@@ -194,4 +137,6 @@
 				.maxDef[1]}
 		</p>
 	{/if}
+	<button on:click={() => console.log($attacker)}>Get props</button>
+	<button on:click={() => console.log($defender)}>Get props</button>
 </div>

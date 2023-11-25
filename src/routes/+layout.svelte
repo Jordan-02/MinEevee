@@ -7,7 +7,7 @@
 	export let data: PageData;
 </script>
 
-<div class="min-h-screen flex flex-col bg-slate-950 text-white">
+<div class="min-h-screen flex flex-col bg-stone-950 text-white">
 	<Navbar />
 	<main class="grow">
 		<PageTransition url={data.props.url.toString()}>

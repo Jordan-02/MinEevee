@@ -1,22 +1,41 @@
 import { GameClient, POKEDEXES, PokemonClient } from 'pokenode-ts';
 import type { PageLoad } from './$types';
 
-const generations = {
-	1: 'kanto',
-	2: 'updated-johto',
-	3: 'updated-hoenn',
-	4: 'extended-sinnoh',
-	5: 'updated-unova',
-	6: 'kalos',
-	7: 'updated-alola',
-	8: 'galar',
-	9: 'paldea'
-};
-
-export const load = (async () => {
-	//const res = await fetch(`https://pokeapi.co/api/v2/pokedex/${generations[9]}/`);
+export const load = (async ({ data, fetch, url }) => {
 	const api = new GameClient();
 	const monApi = new PokemonClient();
+	const generationId = url.searchParams.get('generation') || '9';
+	let mons;
+
+	if (generationId === '9') {
+		const [res, res2] = await Promise.all([
+			fetch(`https://pokeapi.co/api/v2/pokedex/31/`),
+			fetch(`https://pokeapi.co/api/v2/pokedex/32/`)
+		]);
+
+		const json = await res.json();
+		const json2 = await res2.json();
+		const poke = [...json.pokemon_entries, ...json2.pokemon_entries];
+		mons = await Promise.all(
+			poke.map(async (entry) => {
+				try {
+					const { pokemon_species } = entry;
+					const getId = async () => {
+						const mon = await monApi.getPokemonById(+pokemon_species.url.split('/').at(-2)!);
+						return { id: mon.id, name: mon.name };
+					};
+
+					return await getId();
+				} catch (e) {
+					console.log(e);
+				}
+			})
+		);
+		return {
+			data,
+			mons
+		};
+	}
 	const pokedex = await Promise.all([
 		api.getPokedexById(POKEDEXES.CROWN_TUNDRA),
 		api.getPokedexById(POKEDEXES.ISLE_OF_ARMOR),
@@ -28,7 +47,7 @@ export const load = (async () => {
 		return acc;
 	});
 
-	const correct = await Promise.all(
+	mons = await Promise.all(
 		genMons.pokemon_entries.map(async (entry) => {
 			try {
 				const { pokemon_species } = entry;
@@ -43,8 +62,8 @@ export const load = (async () => {
 			}
 		})
 	);
-	//const json = await res.json();
 	return {
-		correct
+		data,
+		mons
 	};
 }) satisfies PageLoad;

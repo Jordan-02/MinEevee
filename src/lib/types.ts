@@ -1,17 +1,19 @@
 import type { GenerationNum, Move } from '@smogon/calc';
 import type { Generation } from '@smogon/calc/dist/data/interface';
 
-export interface DefenderProps {
+export interface PokemonProps {
 	name?: string;
 	item?: string;
 	nature?: string;
-	evs?: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
+	evs: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
 	ivs?: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
 	boosts?: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
 	level?: number;
 }
 
-export interface AttackerProps extends DefenderProps {
+export interface DefenderProps extends PokemonProps {}
+
+export interface AttackerProps extends PokemonProps {
 	move?: string;
 }
 
@@ -20,8 +22,8 @@ export interface OptimizeProps extends EvMapProps {
 }
 
 export interface EvMapProps {
-	attacker: AttackerProps;
-	defender: DefenderProps;
+	attacker: Partial<AttackerProps>;
+	defender: Partial<DefenderProps>;
 	generation: GenerationNum | Generation;
 }
 
@@ -30,3 +32,16 @@ export interface BestEvProps extends EvMapProps {
 }
 
 export type DamageRoll = number | number[] | [number[], number[]];
+
+export interface MapProps {
+	name: string;
+	id: string | number;
+}
+
+export interface BestEvs {
+	minsEvs: number[];
+	equal: number[][];
+	maxHap: number[];
+	maxDef: number[];
+	max: boolean;
+}
