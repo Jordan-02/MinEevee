@@ -1,5 +1,5 @@
 import type { GenerationNum, Move } from '@smogon/calc';
-import type { Generation } from '@smogon/calc/dist/data/interface';
+import type { Generation, MoveCategory } from '@smogon/calc/dist/data/interface';
 
 export interface PokemonProps {
 	name?: string;
@@ -39,9 +39,10 @@ export interface MapProps {
 }
 
 export interface BestEvs {
-	minsEvs: number[];
+	minEvs: number[];
 	equal: number[][];
-	maxHap: number[];
+	maxHp: number[];
 	maxDef: number[];
 	max: boolean;
+	category: MoveCategory;
 }

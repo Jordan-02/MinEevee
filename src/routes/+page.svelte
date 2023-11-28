@@ -3,15 +3,14 @@
 	import PokemonCard from '$lib/components/PokemonCard.svelte';
 	import { Generations } from '@pkmn/data';
 	import { Dex } from '@pkmn/dex';
+	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
 	import type { GenerationNum } from '@smogon/calc';
 	import { attacker, bestEv, defender, generation } from '../lib/stores/stores';
 
 	export let data;
 
 	const { mons } = data;
-	const countries = data.data.countries;
 	let bestEvs: any;
-	console.log(mons);
 
 	const generations: { name: string; id: GenerationNum }[] = [
 		{ name: 'Kanto', id: 1 },
@@ -42,16 +41,6 @@
 	// 	ivs: { spd: 31, hp: 31, def: 31 },
 	// 	level: 50
 	// };
-
-	let evs: Partial<{
-		hp: number;
-		atk: number;
-		def: number;
-		spa: number;
-		spd: number;
-		spe: number;
-	}> = {};
-
 	const gens = new Generations(Dex);
 
 	function getItems(genNum: number) {
@@ -86,26 +75,35 @@
 			generation: $generation,
 			threshold: 1
 		});
-		$bestEv = bestEvs;
+		console.log($attacker);
+		console.log($defender);
 	}
 
-	$: buttonStyle = (id: number): string => {
-		if (id == $generation) {
-			return 'border border-white px-3 py-2 rounded-xl bg-white text-black transition duration-200 ease-in';
-		} else {
-			return 'border border-white px-3 py-2 rounded-xl hover:bg-white hover:text-black transition duration-200 ease-in hover:-translate-y-2';
-		}
-	};
+	// $: buttonStyle = (id: number): string => {
+	// 	if (id == $generation) {
+	// 		return 'border border-white px-3 py-2 rounded-xl bg-white text-black transition duration-200 ease-in';
+	// 	} else {
+	// 		return 'border border-white px-3 py-2 rounded-xl hover:bg-white hover:text-black transition duration-200 ease-in hover:-translate-y-2';
+	// 	}
+	// };
+	$: console.log($generation);
 </script>
 
 <div>
-	<div class="flex justify-evenly mx-20 my-12">
+	<TabGroup
+		justify="justify-center"
+		active="variant-filled-primary"
+		flex="flex-1 lg:flex-none"
+		class="w-full my-4"
+		rounded="rounded-xl"
+		border="border-none"
+	>
 		{#each generations as region (region.id)}
-			<button class={buttonStyle(region.id)} on:click={() => ($generation = region.id)}
-				>Gen {region.id}</button
-			>
+			<Tab bind:group={$generation} value={region.id} name={region.name} class="mx-4"
+				>Gen {region.id}
+			</Tab>
 		{/each}
-	</div>
+	</TabGroup>
 	<div class="flex h-full justify-center">
 		<PokemonCard
 			names={nameMap}
@@ -127,7 +125,7 @@
 
 	<button on:click={handleClick}>Click me</button>
 	{#if bestEvs}
-		<a href="/results"> Click to go to results</a>
+		<a href="/results" on:click={() => ($bestEv = bestEvs)}> Click to go to results</a>
 		<p>Least Amount of Evs to survive: HP:{bestEvs.minEvs[0]} DEF: {bestEvs.minEvs[1]}</p>
 		<p>
 			Least Amount of Evs to survive with maximum HP: HP:{bestEvs.maxHp[0]} DEF: {bestEvs.maxHp[1]}

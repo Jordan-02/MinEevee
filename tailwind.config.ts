@@ -1,12 +1,10 @@
-/** @type {import('tailwindcss').Config} */
-// @ts-check
 import { join } from 'path';
+import type { Config } from 'tailwindcss';
 
 // 1. Import the Skeleton plugin
 import { skeleton } from '@skeletonlabs/tw-plugin';
 
-/** @type {import('tailwindcss').Config} */
-export default {
+const config = {
 	// 2. Opt for dark mode to be handled via the class method
 	darkMode: 'class',
 	content: [
@@ -19,6 +17,10 @@ export default {
 	},
 	plugins: [
 		// 4. Append the Skeleton plugin (after other plugins)
-		skeleton
+		skeleton({
+			themes: { preset: ['crimson'] }
+		})
 	]
-};
+} satisfies Config;
+
+export default config;

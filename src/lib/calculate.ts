@@ -90,11 +90,11 @@ function getEvMap({ attacker, defender, generation }: EvMapProps) {
 		}
 		i += 8;
 	}
-	return evMap;
+	return { evMap, category: move.category };
 }
 
 export function getBestEVs({ attacker, defender, generation, threshold }: BestEvProps) {
-	const evMap = getEvMap({ attacker, defender, generation });
+	const { evMap, category } = getEvMap({ attacker, defender, generation });
 
 	const max = threshold > Math.max(...evMap.keys()) ? Math.max(...evMap.keys()) : threshold;
 	const evMatch = evMap.get(max);
@@ -122,7 +122,8 @@ export function getBestEVs({ attacker, defender, generation, threshold }: BestEv
 	const maxHp = [...evMatch!].sort((a, b) => b[0] - a[0] || a[1] - b[1]);
 	const maxDef = [...evMatch!].sort((a, b) => b[1] - a[1] || a[0] - b[0]);
 
-	if (max != threshold) return { minEvs, equal, maxHp: maxHp[0], maxDef: maxDef[0], max: false };
+	if (max != threshold)
+		return { minEvs, equal, maxHp: maxHp[0], maxDef: maxDef[0], max: false, category };
 
-	return { minEvs, equal, maxHp: maxHp[0], maxDef: maxDef[0], max: true };
+	return { minEvs, equal, maxHp: maxHp[0], maxDef: maxDef[0], max: true, category };
 }

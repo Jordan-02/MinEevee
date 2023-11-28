@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  whatwg-url: 13.0.0
+
 dependencies:
   '@pkmn/data':
     specifier: ^0.7.56
@@ -494,7 +497,7 @@ packages:
     resolution: {integrity: sha512-1ibVeYUacxWYi9i0cf5efil6adJ9WRyZBLivgjs+AUpewx1F3xPi7gLgaASI2SmIQxPoCEjAsLAzKPgMJVgOUQ==}
     engines: {node: 4.x || >=6.0.0}
     dependencies:
-      whatwg-url: 5.0.0
+      whatwg-url: 13.0.0
     dev: false
 
   /@supabase/postgrest-js@1.9.0:
@@ -2079,7 +2082,6 @@ packages:
   /punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
-    dev: true
 
   /queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -2464,8 +2466,11 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /tr46@0.0.3:
-    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+  /tr46@4.1.1:
+    resolution: {integrity: sha512-2lv/66T7e5yNyhAAC4NaKe5nVavzuGJQVVtRYLyQ2OI8tsJ61PMLlelehb0wi2Hx6+hT/OJUWZcw8MjlSRnxvw==}
+    engines: {node: '>=14'}
+    dependencies:
+      punycode: 2.3.1
     dev: false
 
   /ts-api-utils@1.0.3(typescript@5.2.2):
@@ -2603,8 +2608,9 @@ packages:
       vite: 4.5.0(@types/node@20.9.0)
     dev: true
 
-  /webidl-conversions@3.0.1:
-    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+  /webidl-conversions@7.0.0:
+    resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
+    engines: {node: '>=12'}
     dev: false
 
   /websocket@1.0.34:
@@ -2621,11 +2627,12 @@ packages:
       - supports-color
     dev: false
 
-  /whatwg-url@5.0.0:
-    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
+  /whatwg-url@13.0.0:
+    resolution: {integrity: sha512-9WWbymnqj57+XEuqADHrCJ2eSXzn8WXIW/YSGaZtb2WKAInQ6CHfaUUcTyyver0p8BDg5StLQq8h1vtZuwmOig==}
+    engines: {node: '>=16'}
     dependencies:
-      tr46: 0.0.3
-      webidl-conversions: 3.0.1
+      tr46: 4.1.1
+      webidl-conversions: 7.0.0
     dev: false
 
   /which@2.0.2:
