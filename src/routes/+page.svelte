@@ -9,7 +9,8 @@
 
 	export let data;
 
-	const { mons } = data;
+	const { pokemon } = data;
+	console.log(data);
 	let bestEvs: any;
 
 	const generations: { name: string; id: GenerationNum }[] = [
@@ -58,7 +59,7 @@
 		return allMoves;
 	}
 
-	$: names = mons.map((i) => i!.name);
+	$: names = pokemon.map((i) => i!.name);
 	$: items = getItems($generation).sort((a, b) => a.localeCompare(b));
 	$: moves = getMoves($generation).sort((a, b) => a.localeCompare(b));
 	$: natures = Object.entries(gens.dex.data.Natures).map((i) => i[1].name);

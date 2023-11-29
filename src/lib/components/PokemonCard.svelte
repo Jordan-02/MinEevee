@@ -12,7 +12,6 @@
 	export let moves: MapProps[] | undefined = undefined;
 	export let natures: { name: NatureName; id: NatureName }[];
 
-	let image: Response | undefined;
 	let item: Response | undefined;
 
 	const getPokemonSprite = async () => {
@@ -21,7 +20,7 @@
 				`https://pokeapi.co/api/v2/pokemon/${$pokemon.name.toLocaleLowerCase()}`
 			);
 			const json = await sprite.json();
-			image = json.sprites.front_default;
+			$pokemon.sprite = json.sprites.front_default;
 		}
 	};
 
@@ -40,8 +39,8 @@
 	{#if $pokemon.item}
 		<img src={`${item}`} alt="Attacker Item" class="h-16 absolute top-[30%] left-1/3" />
 	{/if}
-	{#if image}
-		<img src={`${image}`} alt="Attacker" class="w-52 h-52" />
+	{#if $pokemon.sprite}
+		<img src={`${$pokemon.sprite}`} alt="Attacker" class="w-52 h-52" />
 	{:else}
 		<span class="font-bold text-2xl w-52 h-52">No sprite available</span>
 	{/if}

@@ -9,6 +9,7 @@ export interface PokemonProps {
 	ivs?: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
 	boosts?: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
 	level?: number;
+	sprite?: string;
 }
 
 export interface DefenderProps extends PokemonProps {}
