@@ -38,6 +38,6 @@ export const bestEv = writable<BestEvs>({
 	equal: [],
 	maxHp: [252, 132],
 	maxDef: [140, 252],
-	max: true,
+	max: 1,
 	category: 'Special'
 });

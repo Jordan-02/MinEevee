@@ -96,9 +96,12 @@ function getEvMap({ attacker, defender, generation }: EvMapProps) {
 export function getBestEVs({ attacker, defender, generation, threshold }: BestEvProps) {
 	const { evMap, category } = getEvMap({ attacker, defender, generation });
 
-	const max = threshold > Math.max(...evMap.keys()) ? Math.max(...evMap.keys()) : threshold;
+	const filteredKeys = [...evMap.keys()].filter((x) => evMap.get(x)!.length > 0);
+	//console.log('This is maxkeys: ', filteredKeys);
+	const max = threshold > Math.max(...filteredKeys) ? Math.max(...filteredKeys) : threshold;
 	const evMatch = evMap.get(max);
-
+	// console.log('This is max: ', max);
+	// console.log('This is evMatch: ', evMap);
 	let minEvs = evMatch![0];
 	const equal = [];
 
@@ -122,8 +125,5 @@ export function getBestEVs({ attacker, defender, generation, threshold }: BestEv
 	const maxHp = [...evMatch!].sort((a, b) => b[0] - a[0] || a[1] - b[1]);
 	const maxDef = [...evMatch!].sort((a, b) => b[1] - a[1] || a[0] - b[0]);
 
-	if (max != threshold)
-		return { minEvs, equal, maxHp: maxHp[0], maxDef: maxDef[0], max: false, category };
-
-	return { minEvs, equal, maxHp: maxHp[0], maxDef: maxDef[0], max: true, category };
+	return { minEvs, equal, maxHp: maxHp[0], maxDef: maxDef[0], max, category };
 }
