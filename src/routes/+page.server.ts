@@ -1,8 +1,9 @@
-import { supabase } from '$lib/supabaseClient';
+import { db } from '$lib/db/drizzle';
+import { pokemon } from '$lib/db/schema';
 
 export const load = async () => {
-	const { data } = await supabase.from('countries').select();
+	const mons = await db.select().from(pokemon);
 	return {
-		countries: data ?? []
+		pokemon: mons ?? []
 	};
 };

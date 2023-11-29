@@ -16,6 +16,9 @@
 				<a href="about">About Me</a>
 			</li>
 			<li>
+				<a href="admin">Dashboard</a>
+			</li>
+			<li>
 				<LightSwitch />
 			</li>
 		</ul>

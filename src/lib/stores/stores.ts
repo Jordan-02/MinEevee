@@ -30,6 +30,8 @@ export const defender = writable<Partial<DefenderProps>>({
 
 export const generation = writable<GenerationNum>(9);
 
+export const itemSprite = writable<string>('');
+
 //export const bestEv = writable<BestEvs>();
 export const bestEv = writable<BestEvs>({
 	minEvs: [204, 164],
