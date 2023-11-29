@@ -1,9 +1,9 @@
-import { PRIVATE_DB_URL } from '$env/static/private';
+import { PUBLIC_DB_URL } from '$env/static/public';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-if (!PRIVATE_DB_URL) throw new Error('Missing env variable "DATABASE_URL"');
+if (!PUBLIC_DB_URL) throw new Error('Missing env variable "DATABASE_URL"');
 
 // Disable prefetch as it is not supported for "Transaction" pool mode
-const client = postgres(PRIVATE_DB_URL);
+const client = postgres(PUBLIC_DB_URL);
 export const db = drizzle(client);

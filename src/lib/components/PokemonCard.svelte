@@ -14,13 +14,10 @@
 
 	let item: Response | undefined;
 
-	const getPokemonSprite = async () => {
+	const getPokemonSprite = () => {
 		if ($pokemon.name) {
-			const sprite = await fetch(
-				`https://pokeapi.co/api/v2/pokemon/${$pokemon.name.toLocaleLowerCase()}`
-			);
-			const json = await sprite.json();
-			$pokemon.sprite = json.sprites.front_default;
+			const sprite = names.find((o) => o.name === $pokemon.name);
+			$pokemon.sprite = sprite?.sprite;
 		}
 	};
 
@@ -37,16 +34,16 @@
 
 <div class="card p-4 border border-white flex w-1/3 flex-col items-center gap-3 relative">
 	{#if $pokemon.item}
-		<img src={`${item}`} alt="Attacker Item" class="h-16 absolute top-[30%] left-1/3" />
+		<img src={`${item}`} alt="Item" class="h-16 absolute top-[30%] left-1/3" />
 	{/if}
 	{#if $pokemon.sprite}
-		<img src={`${$pokemon.sprite}`} alt="Attacker" class="w-52 h-52" />
+		<img src={`${$pokemon.sprite}`} alt="Sprite" class="w-52 h-52" />
 	{:else}
 		<span class="font-bold text-2xl w-52 h-52">No sprite available</span>
 	{/if}
 	<div class="text-black w-1/2">
 		<Svelecte
-			options={names}
+			options={names.map((name) => ({ name: name.name, id: name.name }))}
 			bind:value={$pokemon.name}
 			placeholder="Enter Pokemon..."
 			on:change={getPokemonSprite}

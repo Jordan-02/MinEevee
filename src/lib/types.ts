@@ -36,6 +36,7 @@ export type DamageRoll = number | number[] | [number[], number[]];
 
 export interface MapProps {
 	name: string;
+	sprite?: string;
 	id: string | number;
 }
 
@@ -44,6 +45,6 @@ export interface BestEvs {
 	equal: number[][];
 	maxHp: number[];
 	maxDef: number[];
-	max: boolean;
+	max: number;
 	category: MoveCategory;
 }

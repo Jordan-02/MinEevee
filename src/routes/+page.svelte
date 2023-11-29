@@ -10,8 +10,6 @@
 	export let data;
 
 	const { pokemon } = data;
-	console.log(data);
-	let bestEvs: any;
 
 	const generations: { name: string; id: GenerationNum }[] = [
 		{ name: 'Kanto', id: 1 },
@@ -59,7 +57,7 @@
 		return allMoves;
 	}
 
-	$: names = pokemon.map((i) => i!.name);
+	$: names = pokemon.map((i) => i.name);
 	$: items = getItems($generation).sort((a, b) => a.localeCompare(b));
 	$: moves = getMoves($generation).sort((a, b) => a.localeCompare(b));
 	$: natures = Object.entries(gens.dex.data.Natures).map((i) => i[1].name);
@@ -70,27 +68,16 @@
 	$: naturesMap = natures.map((name) => ({ name, id: name }));
 
 	function handleClick() {
-		bestEvs = getBestEVs({
+		$bestEv = getBestEVs({
 			attacker: $attacker,
 			defender: $defender,
 			generation: $generation,
 			threshold: 1
 		});
-		console.log($attacker);
-		console.log($defender);
 	}
-
-	// $: buttonStyle = (id: number): string => {
-	// 	if (id == $generation) {
-	// 		return 'border border-white px-3 py-2 rounded-xl bg-white text-black transition duration-200 ease-in';
-	// 	} else {
-	// 		return 'border border-white px-3 py-2 rounded-xl hover:bg-white hover:text-black transition duration-200 ease-in hover:-translate-y-2';
-	// 	}
-	// };
-	$: console.log($generation);
 </script>
 
-<div>
+<div class="flex flex-col items-center h-full">
 	<TabGroup
 		justify="justify-center"
 		active="variant-filled-primary"
@@ -105,18 +92,17 @@
 			</Tab>
 		{/each}
 	</TabGroup>
-	<div class="flex h-full justify-center">
+	<div class="flex w-full justify-center gap-x-10">
 		<PokemonCard
-			names={nameMap}
+			names={pokemon}
 			monType="Attacker"
 			pokemon={attacker}
 			items={itemsMap}
 			moves={movesMap}
 			natures={naturesMap}
 		/>
-
 		<PokemonCard
-			names={nameMap}
+			names={pokemon}
 			monType="Defender"
 			pokemon={defender}
 			items={itemsMap}
@@ -124,8 +110,8 @@
 		/>
 	</div>
 
-	<button on:click={handleClick}>Click me</button>
-	{#if bestEvs}
+	<a on:click={handleClick} href="results" class="btn variant-filled">Calculate</a>
+	<!-- {#if bestEvs}
 		<a href="/results" on:click={() => ($bestEv = bestEvs)}> Click to go to results</a>
 		<p>Least Amount of Evs to survive: HP:{bestEvs.minEvs[0]} DEF: {bestEvs.minEvs[1]}</p>
 		<p>
@@ -135,7 +121,5 @@
 			Least Amount of Evs to survive with maximum DEF: HP:{bestEvs.maxDef[0]} DEF: {bestEvs
 				.maxDef[1]}
 		</p>
-	{/if}
-	<button on:click={() => console.log($attacker)}>Get props</button>
-	<button on:click={() => console.log($defender)}>Get props</button>
+	{/if} -->
 </div>
