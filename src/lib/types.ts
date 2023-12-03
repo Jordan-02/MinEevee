@@ -1,31 +1,39 @@
-import type { GenerationNum, Move } from '@smogon/calc';
-import type { Generation, MoveCategory } from '@smogon/calc/dist/data/interface';
+import type { Field, GenerationNum, Move, Pokemon, Result } from '@smogon/calc';
+import type { Generation, MoveCategory, SpeciesName } from '@smogon/calc/dist/data/interface';
 
 export interface PokemonProps {
 	name?: string;
 	item?: string;
 	nature?: string;
 	evs: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
-	ivs?: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
+	ivs: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
 	boosts?: Partial<{ hp: number; atk: number; def: number; spa: number; spd: number; spe: number }>;
 	level?: number;
 	sprite?: string;
 }
 
-export interface DefenderProps extends PokemonProps {}
+export interface DefenderProps extends Partial<Pokemon> {
+	sprite: string;
+}
 
-export interface AttackerProps extends PokemonProps {
+export interface AttackerProps extends Partial<Pokemon> {
 	move?: string;
+	sprite: string;
 }
 
-export interface OptimizeProps extends EvMapProps {
-	move: Move;
-}
-
-export interface EvMapProps {
-	attacker: Partial<AttackerProps>;
-	defender: Partial<DefenderProps>;
+export interface OptimizeProps {
+	attacker: AttackerProps;
+	defender: DefenderProps;
 	generation: GenerationNum | Generation;
+	move: Move;
+	field?: Field;
+}
+export interface EvMapProps {
+	attacker: AttackerProps;
+	defender: DefenderProps;
+	generation: GenerationNum | Generation;
+	field?: Field;
+	move: string;
 }
 
 export interface BestEvProps extends EvMapProps {
@@ -41,10 +49,13 @@ export interface MapProps {
 }
 
 export interface BestEvs {
-	minEvs: number[];
-	equal: number[][];
-	maxHp: number[];
-	maxDef: number[];
+	minEvs: [number, number, Result];
+	equal: [number, number, Result][];
+	maxHp: [number, number, Result];
+	maxDef: [number, number, Result];
 	max: number;
 	category: MoveCategory;
+	same: boolean;
 }
+
+export type AutocompleteValue = SpeciesName | Move | string | undefined;
