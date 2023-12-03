@@ -1,6 +1,6 @@
 <script>
 	import image from '$lib/assets/eevee.png';
-	import { AppBar, LightSwitch } from '@skeletonlabs/skeleton';
+	import { AppBar } from '@skeletonlabs/skeleton';
 </script>
 
 <AppBar class="sticky top-0 left-0 w-full z-50 px-24">
@@ -17,9 +17,6 @@
 			</li>
 			<li>
 				<a href="admin">Dashboard</a>
-			</li>
-			<li>
-				<LightSwitch />
 			</li>
 		</ul>
 	</svelte:fragment>

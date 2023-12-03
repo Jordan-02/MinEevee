@@ -1,7 +1,7 @@
-import { Generations, Move, Pokemon, calculate, type GenerationNum } from '@smogon/calc';
+import { Move, Pokemon, Result, calculate } from '@smogon/calc';
 import type { BestEvProps, DamageRoll, EvMapProps, OptimizeProps } from './types';
 
-function optimize({ attacker, defender, generation, move }: OptimizeProps) {
+function optimize({ attacker, defender, generation, move, field }: OptimizeProps) {
 	const op = new Pokemon(generation, attacker.name!, {
 		item: attacker.item,
 		nature: attacker.nature,
@@ -19,7 +19,7 @@ function optimize({ attacker, defender, generation, move }: OptimizeProps) {
 		level: defender.level
 	});
 
-	const result = calculate(generation, op, def, move);
+	const result = calculate(generation, op, def, move, field);
 	return result;
 }
 
@@ -33,19 +33,19 @@ function survivalChance(roll: DamageRoll, maxHp: number): number {
 	return max / 16;
 }
 
-function getEvMap({ attacker, defender, generation }: EvMapProps) {
+function getEvMap({ attacker, defender, generation, field, move }: EvMapProps) {
 	let i = 0;
 	const keys = [...Array(17).keys()].map((x) => x++ / 16);
-	const gen = Generations.get(generation as GenerationNum);
-	const move = new Move(generation, attacker.move!);
+	// const gen = Generations.get(generation as GenerationNum);
+	const mv = new Move(generation, move);
 
-	const evMap = new Map<number, number[][]>(keys.map((val) => [val, []]));
+	const evMap = new Map<number, [number, number, Result][]>(keys.map((val) => [val, []]));
 
 	while (i <= 252) {
 		let j = 252;
 		while (j >= 0) {
 			let result;
-			if (move.category == 'Special') {
+			if (mv.category == 'Special') {
 				result = optimize({
 					attacker,
 					defender: {
@@ -53,11 +53,16 @@ function getEvMap({ attacker, defender, generation }: EvMapProps) {
 						evs: {
 							...defender.evs,
 							hp: i,
-							spd: j
+							atk: 0, // Add the desired value for the 'atk' property
+							def: 0, // Add the desired value for the 'spa' property
+							spa: 0, // Add the desired value for the 'spd' property
+							spd: j, // Add the desired value for the 'spe' property
+							spe: j
 						}
 					},
-					generation: gen,
-					move
+					generation,
+					move: mv,
+					field
 				});
 			} else {
 				result = optimize({
@@ -67,15 +72,20 @@ function getEvMap({ attacker, defender, generation }: EvMapProps) {
 						evs: {
 							...defender.evs,
 							hp: i,
-							def: j
+							def: j, // Replace this with the desired value for the 'def' property
+							atk: 0, // Add the desired value for the 'atk' property
+							spa: 0, // Add the desired value for the 'spa' property
+							spd: 0, // Add the desired value for the 'spd' property
+							spe: 0 // Add the desired value for the 'spe' property
 						}
 					},
-					generation: gen,
-					move
+					generation,
+					move: mv,
+					field
 				});
 			}
 			// console.log(survivalChance(result.damage, result.defender.stats.hp), result.damage, i, j);
-			evMap.get(survivalChance(result.damage, result.defender.stats.hp))!.push([i, j]);
+			evMap.get(survivalChance(result.damage, result.defender.stats.hp))!.push([i, j, result]);
 
 			if (j == 4) {
 				j -= 4;
@@ -90,11 +100,18 @@ function getEvMap({ attacker, defender, generation }: EvMapProps) {
 		}
 		i += 8;
 	}
-	return { evMap, category: move.category };
+	return { evMap, category: mv.category };
 }
 
-export function getBestEVs({ attacker, defender, generation, threshold }: BestEvProps) {
-	const { evMap, category } = getEvMap({ attacker, defender, generation });
+export function getBestEVs({
+	attacker,
+	defender,
+	generation,
+	threshold,
+	field,
+	move
+}: BestEvProps) {
+	const { evMap, category } = getEvMap({ attacker, defender, generation, field, move });
 
 	const filteredKeys = [...evMap.keys()].filter((x) => evMap.get(x)!.length > 0);
 	//console.log('This is maxkeys: ', filteredKeys);
@@ -106,7 +123,7 @@ export function getBestEVs({ attacker, defender, generation, threshold }: BestEv
 	const equal = [];
 
 	for (const i of evMatch!) {
-		if (i == minEvs) {
+		if ((i.slice(0, 2) as [number, number]) == (minEvs.slice(0, 2) as [number, number])) {
 			continue;
 		}
 		if (i[0] + i[1] < minEvs[0] + minEvs[1]) {
@@ -114,7 +131,7 @@ export function getBestEVs({ attacker, defender, generation, threshold }: BestEv
 		}
 	}
 	for (const i of evMatch!) {
-		if (i == minEvs) {
+		if ((i.slice(0, 2) as [number, number]) == (minEvs.slice(0, 2) as [number, number])) {
 			continue;
 		}
 		if (i[0] + i[1] == minEvs[0] + minEvs[1]) {
@@ -125,5 +142,13 @@ export function getBestEVs({ attacker, defender, generation, threshold }: BestEv
 	const maxHp = [...evMatch!].sort((a, b) => b[0] - a[0] || a[1] - b[1]);
 	const maxDef = [...evMatch!].sort((a, b) => b[1] - a[1] || a[0] - b[0]);
 
-	return { minEvs, equal, maxHp: maxHp[0], maxDef: maxDef[0], max, category };
+	return {
+		minEvs,
+		equal,
+		maxHp: maxHp[0],
+		maxDef: maxDef[0],
+		max,
+		category,
+		same: max == threshold
+	};
 }
