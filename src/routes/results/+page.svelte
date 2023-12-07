@@ -78,10 +78,6 @@
 				<a href="/results" on:click={handleClick} class="btn variant-filled-secondary"> Recalc </a>
 			</div>
 		</div>
-		<div class="flex flex-col items-center mb-4 gap-y-2">
-			<p>Would you like to try again with a different nature?</p>
-			<a href="/" class="btn variant-filled-secondary">Recalc</a>
-		</div>
 	</div>
 {:else}
 	<p class="flex justify-center h-screen font-black text-4xl items-center">

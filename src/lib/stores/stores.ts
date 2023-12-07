@@ -18,7 +18,7 @@ export const defender = writable<DefenderProps>({
 	sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/576.png'
 });
 
-export const field = writable<Field>(new Field());
+export const field = writable<Field>(new Field({ gameType: 'Doubles' }));
 
 export const generation = writable<GenerationNum>(9);
 

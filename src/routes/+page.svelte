@@ -8,7 +8,6 @@
 	export let data;
 
 	const { pokemon } = data;
-	$field.gameType = 'Doubles';
 	let threshold = 1;
 
 	// const generations: { name: string; id: GenerationNum }[] = [
