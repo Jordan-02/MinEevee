@@ -1,10 +1,17 @@
 import { db } from '$lib/db/drizzle';
-import { pokemon } from '$lib/db/schema';
+import { itemSprites, pokemon } from '$lib/db/schema';
+import { Generations } from '@pkmn/data';
+import { Dex } from '@pkmn/dex';
 import { PokemonClient } from 'pokenode-ts';
 
 export const actions = {
 	default: async () => {
 		const monApi = new PokemonClient();
+		const itemNames: string[] = [];
+		const gens = new Generations(Dex);
+		for (const i of gens.get(9).items) {
+			itemNames.push(i.name as string);
+		}
 
 		const [res, res2] = await Promise.all([
 			fetch(`https://pokeapi.co/api/v2/pokedex/31/`),
@@ -26,11 +33,31 @@ export const actions = {
 				}
 			})
 		);
+		const items: ({ name: string; sprite: string } | undefined)[] = await Promise.all(
+			itemNames.map(async (item) => {
+				try {
+					console.log(item);
+					const itemData = await fetch(
+						`https://pokeapi.co/api/v2/item/${item.toLocaleLowerCase().split(' ').join('-')}`
+					);
+					const json = await itemData.json();
+					return { name: item, sprite: json.sprites.default || '' };
+				} catch (e) {
+					console.log(e);
+					return { name: item, sprite: '' };
+				}
+			})
+		);
+
 		const filtered = [...new Map(mons.map((mon) => [mon!.id, mon])).values()];
+		console.log(items);
 		try {
 			await db
 				.insert(pokemon)
 				.values(filtered.map((mon) => ({ name: mon!.name, sprite: mon!.sprite, id: mon!.id })));
+			await db
+				.insert(itemSprites)
+				.values(items.map((item) => ({ name: item!.name, sprite: item!.sprite })));
 		} catch (e) {
 			console.log('Insertion Failed');
 		}

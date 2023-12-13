@@ -60,7 +60,7 @@ function getEvMap({ attacker, defender, generation, field, move }: EvMapProps) {
 				move: mv,
 				field
 			});
-			// console.log(survivalChance(result.damage, result.defender.stats.hp), result.damage, i, j);
+
 			evMap.get(survivalChance(result.damage, result.defender.stats.hp))!.push([hp, def, result]);
 			if (def == 4) {
 				def -= 4;
@@ -93,37 +93,13 @@ export function getBestEVs({
 	const max = threshold > Math.max(...filteredKeys) ? Math.max(...filteredKeys) : threshold;
 	const evMatch = evMap.get(max);
 
-	let minEvs = evMatch![0];
-	const equal = [];
-
-	for (const i of evMatch!) {
-		if ((i.slice(0, 2) as [number, number]) == (minEvs.slice(0, 2) as [number, number])) {
-			continue;
-		}
-		if (i[0] + i[1] < minEvs[0] + minEvs[1]) {
-			minEvs = i;
-		}
-	}
-	for (const i of evMatch!) {
-		if ((i.slice(0, 2) as [number, number]) == (minEvs.slice(0, 2) as [number, number])) {
-			continue;
-		}
-		if (i[0] + i[1] == minEvs[0] + minEvs[1]) {
-			equal.push(i);
-		}
-	}
-
 	const maxHp = [...evMatch!].sort((a, b) => a[1] - b[1] || a[0] + a[1] - (b[0] + b[1]));
-	// const min = [...evMatch!].sort((a, b) => a[0] + a[1] - (b[0] + b[1]))
-	// console.log(
-	// 	'Lest Evs',
-	// 	[...evMatch!].sort((a, b) => a[0] + a[1] - (b[0] + b[1]))
-	// );
+	const minEvs = [...evMatch!].sort((a, b) => a[0] + a[1] - (b[0] + b[1]));
+
 	const maxDef = [...evMatch!].sort((a, b) => a[0] - b[0] || a[0] + a[1] - (b[0] + b[1]));
 
 	return {
-		minEvs,
-		equal,
+		minEvs: minEvs[0],
 		maxHp: maxHp[0],
 		maxDef: maxDef[0],
 		max,
