@@ -3,7 +3,6 @@
 	import type { NatureName } from '@pkmn/data';
 	import Svelecte from 'svelecte';
 	import type { Writable } from 'svelte/store';
-
 	export let names: MapProps[];
 	export let monType: 'Attacker' | 'Defender';
 	export let pokemon: Writable<AttackerProps> | Writable<Partial<DefenderProps>>;
@@ -14,10 +13,8 @@
 	let item: Response | undefined;
 
 	const getPokemonSprite = () => {
-		if ($pokemon.name) {
-			const sprite = names.find((o) => o.name === $pokemon.name);
-			$pokemon.sprite = sprite?.sprite;
-		}
+		const sprite = names.find((o) => o.name === $pokemon.name);
+		$pokemon.sprite = sprite?.sprite;
 	};
 
 	const getItemSprite = async () => {
@@ -63,7 +60,7 @@
 			bind:value={$pokemon.item}
 			placeholder="Enter Item..."
 			on:change={getItemSprite}
-			class="svelecte-control text-red-500"
+			class="svelecte-control "
 		/>
 	</div>
 	{#if 'move' in $pokemon}

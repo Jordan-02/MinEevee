@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { getBestEVs } from '$lib/calculate';
+	import Field from '$lib/components/Field.svelte';
+	import PokemonCard from '$lib/components/PokemonCard.svelte';
+	import { attacker, bestEv, defender, field, generation } from '$lib/stores/stores';
 	import { Generations } from '@pkmn/data';
 	import { Dex } from '@pkmn/dex';
 	import { onMount } from 'svelte';
-	import { attacker, bestEv, defender, field, generation } from '../lib/stores/stores';
-	import Field from './Field.svelte';
-	import PokemonCard from './PokemonCard.svelte';
 
 	export let data;
 

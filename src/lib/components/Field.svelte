@@ -49,21 +49,11 @@
 	</div>
 
 	<div class="flex flex-col items-center gap-y-2 p-2">
-		<!-- <div class="btn-group variant-filled">
-			<button
-				on:click={() => ($field.gameType = 'Singles')}
-				class={`${$field.gameType == 'Singles' ? 'bg-red-700 hover:bg-red-400' : ''}`}
-			>
-				Singles
-			</button>
-			<button on:click={() => ($field.gameType = 'Doubles')}> Doubles </button>
-		</div> -->
-
 		<TabGroup
 			justify="justify-center"
 			border="border-2 border-surface-900-50-token rounded-l-xl rounded-r-xl"
 			active="bg-secondary-500 text-white"
-			rounded="rounded-none  "
+			rounded="rounded-none"
 		>
 			<Tab
 				bind:group={$field.gameType}
