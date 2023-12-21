@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { AutocompleteValue } from '$lib/types';
 	import { ListBox, ListBoxItem, popup, type PopupSettings } from '@skeletonlabs/skeleton';
+	import type { Writable } from 'svelte/store';
 
 	export let items: string[] = [];
-	export let store: AutocompleteValue;
+	export let store: Writable<string>;
 
 	let comboboxValue: string = '';
 	$: console.log(comboboxValue);
@@ -37,7 +37,7 @@
 				bind:group={comboboxValue}
 				name="medium"
 				value={name}
-				on:click={() => (store = comboboxValue.toLocaleLowerCase())}>{name}</ListBoxItem
+				on:click={() => ($store = comboboxValue.toLocaleLowerCase())}>{name}</ListBoxItem
 			>
 		{/each}
 	</ListBox>

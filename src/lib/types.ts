@@ -13,12 +13,12 @@ export interface PokemonProps {
 }
 
 export interface DefenderProps extends Partial<Pokemon> {
-	sprite: string;
+	sprite?: string;
 }
 
 export interface AttackerProps extends Partial<Pokemon> {
 	move?: string;
-	sprite: string;
+	sprite?: string;
 }
 
 export interface OptimizeProps {
@@ -50,7 +50,6 @@ export interface MapProps {
 
 export interface BestEvs {
 	minEvs: [number, number, Result];
-	equal: [number, number, Result][];
 	maxHp: [number, number, Result];
 	maxDef: [number, number, Result];
 	max: number;

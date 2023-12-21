@@ -3,22 +3,18 @@
 	import type { NatureName } from '@pkmn/data';
 	import Svelecte from 'svelecte';
 	import type { Writable } from 'svelte/store';
-
 	export let names: MapProps[];
 	export let monType: 'Attacker' | 'Defender';
 	export let pokemon: Writable<AttackerProps> | Writable<Partial<DefenderProps>>;
 	export let items: MapProps[];
 	export let moves: MapProps[] | undefined = undefined;
 	export let natures: { name: NatureName; id: NatureName }[];
-	$: console.log($pokemon.sprite);
 
 	let item: Response | undefined;
 
 	const getPokemonSprite = () => {
-		if ($pokemon.name) {
-			const sprite = names.find((o) => o.name === $pokemon.name);
-			$pokemon.sprite = sprite?.sprite;
-		}
+		const sprite = names.find((o) => o.name === $pokemon.name);
+		$pokemon.sprite = sprite?.sprite;
 	};
 
 	const getItemSprite = async () => {
@@ -32,8 +28,10 @@
 	};
 </script>
 
-<div class=" pb-4 border border-white flex w-1/3 flex-col items-center gap-3 relative">
-	<div class="!border-b w-full p-2">
+<!-- {$itemSprite || 'hey'}
+<Autocomplete items={items.map((item) => item.name)} store={itemSprite} /> -->
+<div class="pb-4 border border-white flex w-1/3 flex-col items-center gap-3 relative">
+	<div class="border-b w-full p-2">
 		{#if monType == 'Attacker'}
 			<h1 class="font-bold text-3xl">Attacker</h1>
 		{:else}
@@ -62,7 +60,7 @@
 			bind:value={$pokemon.item}
 			placeholder="Enter Item..."
 			on:change={getItemSprite}
-			class="svelecte-control text-red-500"
+			class="svelecte-control "
 		/>
 	</div>
 	{#if 'move' in $pokemon}
@@ -71,7 +69,12 @@
 		</div>
 	{/if}
 	<div class="text-black w-1/2">
-		<Svelecte options={natures} bind:value={$pokemon.nature} placeholder="Enter Nature..." />
+		<select class="select text-white" bind:value={$pokemon.nature}>
+			{#each natures as nature}
+				<option value={nature.name}> {nature.name}</option>
+			{/each}
+		</select>
+		<!-- <Svelecte options={natures} bind:value={$pokemon.nature} placeholder="Enter Nature..." /> -->
 	</div>
 	<input type="number" bind:value={$pokemon.level} class="text-black" max={100} min={0} />
 	{#if monType == 'Attacker' && $pokemon.evs && $pokemon.ivs}

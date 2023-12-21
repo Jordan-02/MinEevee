@@ -1,14 +1,20 @@
 <script lang="ts">
 	import { getBestEVs } from '$lib/calculate';
+	import Field from '$lib/components/Field.svelte';
 	import PokemonCard from '$lib/components/PokemonCard.svelte';
+	import { attacker, bestEv, defender, field, generation } from '$lib/stores/stores';
 	import { Generations } from '@pkmn/data';
 	import { Dex } from '@pkmn/dex';
-	import { attacker, bestEv, defender, field, generation } from '../lib/stores/stores';
+	import { onMount } from 'svelte';
 
 	export let data;
 
 	const { pokemon } = data;
 	let threshold = 1;
+
+	onMount(() => {
+		console.log($attacker);
+	});
 
 	// const generations: { name: string; id: GenerationNum }[] = [
 	// 	{ name: 'Kanto', id: 1 },
@@ -23,6 +29,14 @@
 	// ];
 
 	const gens = new Generations(Dex);
+
+	$: items = getItems($generation).sort((a, b) => a.localeCompare(b));
+	$: moves = getMoves($generation).sort((a, b) => a.localeCompare(b));
+	$: natures = Object.entries(gens.dex.data.Natures).map((i) => i[1].name);
+
+	$: itemsMap = items.map((name) => ({ name, id: name }));
+	$: movesMap = moves.map((name) => ({ name, id: name }));
+	$: naturesMap = natures.map((name) => ({ name, id: name }));
 
 	function getItems(genNum: number) {
 		let allItems: string[] = [];
@@ -39,15 +53,10 @@
 		return allMoves;
 	}
 
-	$: items = getItems($generation).sort((a, b) => a.localeCompare(b));
-	$: moves = getMoves($generation).sort((a, b) => a.localeCompare(b));
-	$: natures = Object.entries(gens.dex.data.Natures).map((i) => i[1].name);
-
-	$: itemsMap = items.map((name) => ({ name, id: name }));
-	$: movesMap = moves.map((name) => ({ name, id: name }));
-	$: naturesMap = natures.map((name) => ({ name, id: name }));
-
 	function handleClick() {
+		// if (!$attacker) {
+		// 	$attacker = {new Pokemon($generation,)}
+		// }
 		$bestEv = getBestEVs({
 			attacker: $attacker,
 			defender: $defender,
@@ -83,6 +92,7 @@
 			moves={movesMap}
 			natures={naturesMap}
 		/>
+		<Field />
 		<PokemonCard
 			names={pokemon}
 			monType="Defender"
