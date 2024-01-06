@@ -13,21 +13,23 @@ export const actions = {
 			itemNames.push(i.name as string);
 		}
 
-		const [res, res2] = await Promise.all([
+		const [res, res2, res3] = await Promise.all([
 			fetch(`https://pokeapi.co/api/v2/pokedex/31/`),
-			fetch(`https://pokeapi.co/api/v2/pokedex/32/`)
+			fetch(`https://pokeapi.co/api/v2/pokedex/32/`),
+			fetch(`https://pokeapi.co/api/v2/pokedex/33/`)
 		]);
 
 		const json = await res.json();
 		const json2 = await res2.json();
-		const poke = [...json.pokemon_entries, ...json2.pokemon_entries];
+		const json3 = await res3.json();
+		const poke = [...json.pokemon_entries, ...json2.pokemon_entries, ...json3.pokemon_entries];
 		const mons = await Promise.all(
 			poke.map(async (entry) => {
 				try {
 					const { pokemon_species } = entry;
 
 					const mon = await monApi.getPokemonById(+pokemon_species.url.split('/').at(-2)!);
-					return { id: mon.id, name: mon.name, sprite: mon.sprites.front_default! };
+					return { id: mon.id, name: mon.name, sprite: mon.sprites.front_default || '' };
 				} catch (e) {
 					console.log(e);
 				}
@@ -50,16 +52,19 @@ export const actions = {
 		);
 
 		const filtered = [...new Map(mons.map((mon) => [mon!.id, mon])).values()];
-		console.log(items);
+		console.log(filtered);
 		try {
 			await db
 				.insert(pokemon)
-				.values(filtered.map((mon) => ({ name: mon!.name, sprite: mon!.sprite, id: mon!.id })));
+				.values(filtered.map((mon) => ({ name: mon!.name, sprite: mon!.sprite, id: mon!.id })))
+				.onConflictDoNothing();
 			await db
 				.insert(itemSprites)
-				.values(items.map((item) => ({ name: item!.name, sprite: item!.sprite })));
+				.values(items.map((item) => ({ name: item!.name, sprite: item!.sprite })))
+				.onConflictDoNothing();
 		} catch (e) {
 			console.log('Insertion Failed');
+			console.log(e);
 		}
 	}
 };

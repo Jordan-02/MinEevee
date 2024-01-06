@@ -63,7 +63,7 @@
 			class="svelecte-control "
 		/>
 	</div>
-	{#if 'move' in $pokemon}
+	{#if monType == 'Attacker' && 'move' in $pokemon}
 		<div class="text-black w-1/2">
 			<Svelecte options={moves} bind:value={$pokemon.move} placeholder="Enter Move..." />
 		</div>
