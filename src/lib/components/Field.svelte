@@ -101,5 +101,24 @@
 				</Tab>
 			{/each}
 		</TabGroup>
+		<div>
+			<TabGroup
+				justify="justify-center"
+				border="border-2 border-surface-900-50-token rounded-l-xl rounded-r-xl"
+				rounded="rounded-none last:border-none border-r-2 border-white"
+				flex="flex-1 lg:flex-none flex-wrap"
+			>
+				{#each ['None', 'Electric', 'Psychic', 'Grassy', 'Misty'] as terrain}
+					<Tab
+						bind:group={$field.terrain}
+						name={terrain}
+						value={terrain == 'None' ? undefined : terrain}
+						active={` ${terrainTab}`}
+					>
+						<span>{terrain}</span>
+					</Tab>
+				{/each}
+			</TabGroup>
+		</div>
 	</div>
 </div>
