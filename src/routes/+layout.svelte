@@ -10,6 +10,7 @@
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	export let data: PageData;
+	console.log(data);
 </script>
 
 <div class="min-h-screen flex flex-col">
